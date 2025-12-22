@@ -1,0 +1,100 @@
+---
+- name: Install
+  gather_facts: true
+  hosts: 127.0.0.1
+  connection: local
+  
+  tasks:
+  - name: Ensure everything is up to date
+    ansible.builtin.dnf:
+      name: '*'
+      state: latest
+    become: true
+
+  - name: Install Basic DNF packages
+    ansible.builtin.dnf:
+      name:
+        - vim
+        - flatpak
+        - python3-pip
+      state: present
+    become: true
+
+  - name: Multimedia packages
+    ansible.builtin.dnf:
+      name: '@multimedia'
+      state: present
+      install_weak_deps: False
+      allowerasing: True
+    become: true
+
+######################
+### Gnome Settings ###
+######################
+  - name: DNF packages for Gnome Settings
+    ansible.builtin.dnf:
+      name: python3-psutil
+      state: present
+    become: true
+
+  - name: Gnome Settings
+    community.general.dconf:
+      key: "/org/gnome/desktop/interface/color-scheme"
+      value: "'prefer-dark'"
+      state: present
+
+  - name: Gnome Clock
+    community.general.dconf:
+      key: "/org/gnome/desktop/interface/clock-format"
+      value: "'24h'"
+      state: present
+
+  - name: Install CLI tool to manage GNOME extensions
+    ansible.builtin.pip:
+      name: gnome-extensions-cli
+      extra_args: --user --upgrade
+
+#  - name: Install and enable Tiling Shell
+#    ansible.builtin.command:
+#      cmd: gext install 7065 && gext enable 7065
+######################
+### Virtualization ###
+######################
+  - name: Install Virt-manager
+    ansible.builtin.dnf:
+      name: '@virtualization'
+      state: present
+    become: true
+
+
+### Other ###
+#############
+  - name: Discord
+    community.general.flatpak:
+      name: com.discordapp.Discord
+      state: present
+      remote: flathub
+
+  - name: Youtube Music
+    community.general.flatpak:
+      name: app.ytmdesktop.ytmdesktop
+      state: present
+      remote: flathub
+      
+  - name: Steam
+    community.general.flatpak:
+      name: com.valvesoftware.Steam
+      state: present
+      remote: flathub
+  
+  - name: Obsidian
+    community.general.flatpak:
+      name: md.obsidian.Obsidian
+      state: present
+      remote: flathub
+
+  - name: Anki
+    community.general.flatpak:
+      name: net.ankiweb.Anki
+      state: present
+      remote: flathub
