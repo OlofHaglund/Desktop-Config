@@ -66,7 +66,30 @@
       state: present
     become: true
 
+#########################
+### Automatic Updates ###
+#########################
+  - name: Install DNF Automatic
+    ansible.builtin.dnf:
+      name: dnf-automatic
+      state: present
+    become: true
+  - name: Place Configuration file for DNF Automatic
+    ansible.builtin.copy:
+      src: resources/etc-dnf-automatic.conf
+      dest: /etc/dnf/automatic.conf
+      owner: root
+      group: root
+      mode: '0644'
+    become: true
+  - name: Enable and start DNF Automatic timer
+    ansible.builtin.systemd:
+      name: dnf-automatic.timer
+      enabled: true
+      state: started
+    become: true
 
+#############
 ### Other ###
 #############
   - name: Discord
