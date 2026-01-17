@@ -31,14 +31,33 @@
 #################
 ### Git Setup ###
 #################
-  - name: Install .gitconfig
+  - name: Stat gitconfig source
+    ansible.builtin.stat:
+      path: resources/gitconfig
+    register: gitconfig_src
+
+  - name: Stat gitconfig destination
+    ansible.builtin.stat:
+      path: "{{ ansible_env.HOME }}/.gitconfig"
+    register: gitconfig_dest
+
+  - name: Backup existing gitconfig when not already linked
     ansible.builtin.copy:
+      src: "{{ ansible_env.HOME }}/.gitconfig"
+      dest: "{{ ansible_env.HOME }}/.gitconfig.bak"
+      remote_src: true
+      force: false
+    when: gitconfig_dest.stat.exists and (gitconfig_dest.stat.inode != gitconfig_src.stat.inode or gitconfig_dest.stat.dev != gitconfig_src.stat.dev)
+
+  - name: Install .gitconfig
+    ansible.builtin.file:
       src: resources/gitconfig
       dest: "{{ ansible_env.HOME }}/.gitconfig"
       owner: "{{ ansible_user_id }}"
       group: "{{ ansible_user_id }}"
       mode: '0644'
-      force: false
+      state: hard
+      force: true
 
 ######################
 ### Gnome Settings ###
@@ -81,6 +100,7 @@
 #########################
 ### Automatic Updates ###
 #########################
+
   - name: Install DNF Automatic
     ansible.builtin.dnf:
       name: dnf-automatic
@@ -93,6 +113,7 @@
       owner: root
       group: root
       mode: '0644'
+      force: true
     become: true
   - name: Enable and start DNF Automatic timer
     ansible.builtin.systemd:

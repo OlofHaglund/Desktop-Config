@@ -1,0 +1,6 @@
+[user]
+    name = Olof Haglund
+    email = olof@olofhaglund.name
+
+[init]
+    defaultBranch = main
