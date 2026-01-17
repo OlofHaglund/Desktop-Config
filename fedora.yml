@@ -60,6 +60,38 @@
         state: hard
         force: true
 
+  #################
+  ### Bash Setup ###
+  #################
+    - name: Stat bashrc source
+      ansible.builtin.stat:
+        path: resources/bashrc
+      register: bashrc_src
+
+    - name: Stat bashrc destination
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+      register: bashrc_dest
+
+    - name: Backup existing bashrc when not already linked
+      ansible.builtin.copy:
+        src: "{{ ansible_env.HOME }}/.bashrc"
+        dest: "{{ ansible_env.HOME }}/.bashrc.bak"
+        mode: '0644'
+        remote_src: true
+        force: false
+      when: bashrc_dest.stat.exists and (bashrc_dest.stat.inode != bashrc_src.stat.inode or bashrc_dest.stat.dev != bashrc_src.stat.dev)
+
+    - name: Install .bashrc
+      ansible.builtin.file:
+        src: resources/bashrc
+        dest: "{{ ansible_env.HOME }}/.bashrc"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: '0644'
+        state: hard
+        force: true
+
   ######################
   ### Gnome Settings ###
   ######################
