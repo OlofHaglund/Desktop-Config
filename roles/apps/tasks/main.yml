@@ -1,0 +1,30 @@
+---
+- name: Discord
+  community.general.flatpak:
+    name: com.discordapp.Discord
+    state: present
+    remote: flathub
+
+- name: Youtube Music
+  community.general.flatpak:
+    name: app.ytmdesktop.ytmdesktop
+    state: present
+    remote: flathub
+
+- name: Steam
+  community.general.flatpak:
+    name: com.valvesoftware.Steam
+    state: present
+    remote: flathub
+
+- name: Obsidian
+  community.general.flatpak:
+    name: md.obsidian.Obsidian
+    state: present
+    remote: flathub
+
+- name: Anki
+  community.general.flatpak:
+    name: net.ankiweb.Anki
+    state: present
+    remote: flathub

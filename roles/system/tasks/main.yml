@@ -1,0 +1,66 @@
+---
+- name: Ensure everything is up to date
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+  become: true
+  tags:
+    - sudo
+
+- name: Install Basic DNF packages
+  ansible.builtin.dnf:
+    name:
+      - vim
+      - flatpak
+      - python3-pip
+    state: present
+  become: true
+  tags:
+    - sudo
+
+- name: Multimedia packages
+  ansible.builtin.dnf:
+    name: '@multimedia'
+    state: present
+    install_weak_deps: false
+    allowerasing: true
+  become: true
+  tags:
+    - sudo
+
+- name: Install Virt-manager
+  ansible.builtin.dnf:
+    name: '@virtualization'
+    state: present
+  become: true
+  tags:
+    - sudo
+
+- name: Install DNF Automatic
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+  become: true
+  tags:
+    - sudo
+
+- name: Place Configuration file for DNF Automatic
+  ansible.builtin.copy:
+    src: etc-dnf-automatic.conf
+    dest: /etc/dnf/automatic.conf
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
+  become: true
+  tags:
+    - sudo
+
+- name: Enable and start DNF Automatic timer
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - sudo

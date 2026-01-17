@@ -1,0 +1,25 @@
+---
+- name: DNF packages for Gnome Settings
+  ansible.builtin.dnf:
+    name: python3-psutil
+    state: present
+  become: true
+  tags:
+    - sudo
+
+- name: Gnome Settings
+  community.general.dconf:
+    key: "/org/gnome/desktop/interface/color-scheme"
+    value: "'prefer-dark'"
+    state: present
+
+- name: Gnome Clock
+  community.general.dconf:
+    key: "/org/gnome/desktop/interface/clock-format"
+    value: "'24h'"
+    state: present
+
+- name: Install CLI tool to manage GNOME extensions
+  ansible.builtin.pip:
+    name: gnome-extensions-cli
+    extra_args: --user --upgrade

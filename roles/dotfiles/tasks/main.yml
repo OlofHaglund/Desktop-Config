@@ -1,0 +1,64 @@
+---
+- name: Stat gitconfig source
+  ansible.builtin.stat:
+    path: "{{ role_path }}/files/gitconfig"
+  register: dotfiles_gitconfig_src
+
+- name: Stat gitconfig destination
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
+  register: dotfiles_gitconfig_dest
+
+- name: Backup existing gitconfig when not already linked
+  ansible.builtin.copy:
+    src: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.gitconfig.bak"
+    mode: '0644'
+    remote_src: true
+    force: false
+  when:
+    - dotfiles_gitconfig_dest.stat.exists
+    - dotfiles_gitconfig_dest.stat.inode != dotfiles_gitconfig_src.stat.inode or
+      dotfiles_gitconfig_dest.stat.dev != dotfiles_gitconfig_src.stat.dev
+
+- name: Install .gitconfig
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/gitconfig"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+    mode: '0644'
+    state: hard
+    force: true
+
+- name: Stat bashrc source
+  ansible.builtin.stat:
+    path: "{{ role_path }}/files/bashrc"
+  register: dotfiles_bashrc_src
+
+- name: Stat bashrc destination
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
+  register: dotfiles_bashrc_dest
+
+- name: Backup existing bashrc when not already linked
+  ansible.builtin.copy:
+    src: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.bashrc.bak"
+    mode: '0644'
+    remote_src: true
+    force: false
+  when:
+    - dotfiles_bashrc_dest.stat.exists
+    - dotfiles_bashrc_dest.stat.inode != dotfiles_bashrc_src.stat.inode or
+      dotfiles_bashrc_dest.stat.dev != dotfiles_bashrc_src.stat.dev
+
+- name: Install .bashrc
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/bashrc"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+    mode: '0644'
+    state: hard
+    force: true
