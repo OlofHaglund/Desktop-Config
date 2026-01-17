@@ -28,6 +28,18 @@
       allowerasing: True
     become: true
 
+#################
+### Git Setup ###
+#################
+  - name: Install .gitconfig
+    ansible.builtin.copy:
+      src: resources/gitconfig
+      dest: "{{ ansible_env.HOME }}/.gitconfig"
+      owner: "{{ ansible_user_id }}"
+      group: "{{ ansible_user_id }}"
+      mode: '0644'
+      force: false
+
 ######################
 ### Gnome Settings ###
 ######################
