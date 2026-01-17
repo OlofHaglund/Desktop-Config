@@ -3,154 +3,161 @@
   gather_facts: true
   hosts: 127.0.0.1
   connection: local
-  
+
   tasks:
-  - name: Ensure everything is up to date
-    ansible.builtin.dnf:
-      name: '*'
-      state: latest
-    become: true
+    - name: Ensure everything is up to date  # noqa package-latest
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+      become: true
 
-  - name: Install Basic DNF packages
-    ansible.builtin.dnf:
-      name:
-        - vim
-        - flatpak
-        - python3-pip
-      state: present
-    become: true
+    - name: Install Basic DNF packages
+      ansible.builtin.dnf:
+        name:
+          - vim
+          - flatpak
+          - python3-pip
+        state: present
+      become: true
 
-  - name: Multimedia packages
-    ansible.builtin.dnf:
-      name: '@multimedia'
-      state: present
-      install_weak_deps: False
-      allowerasing: True
-    become: true
+    - name: Multimedia packages
+      ansible.builtin.dnf:
+        name: '@multimedia'
+        state: present
+        install_weak_deps: false
+        allowerasing: true
+      become: true
 
-#################
-### Git Setup ###
-#################
-  - name: Stat gitconfig source
-    ansible.builtin.stat:
-      path: resources/gitconfig
-    register: gitconfig_src
+  #################
+  ### Git Setup ###
+  #################
+    - name: Stat gitconfig source
+      ansible.builtin.stat:
+        path: resources/gitconfig
+      register: gitconfig_src
 
-  - name: Stat gitconfig destination
-    ansible.builtin.stat:
-      path: "{{ ansible_env.HOME }}/.gitconfig"
-    register: gitconfig_dest
+    - name: Stat gitconfig destination
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.gitconfig"
+      register: gitconfig_dest
 
-  - name: Backup existing gitconfig when not already linked
-    ansible.builtin.copy:
-      src: "{{ ansible_env.HOME }}/.gitconfig"
-      dest: "{{ ansible_env.HOME }}/.gitconfig.bak"
-      remote_src: true
-      force: false
-    when: gitconfig_dest.stat.exists and (gitconfig_dest.stat.inode != gitconfig_src.stat.inode or gitconfig_dest.stat.dev != gitconfig_src.stat.dev)
+    - name: Backup existing gitconfig when not already linked
+      ansible.builtin.copy:
+        src: "{{ ansible_env.HOME }}/.gitconfig"
+        dest: "{{ ansible_env.HOME }}/.gitconfig.bak"
+        mode: '0644'
+        remote_src: true
+        force: false
+      when: gitconfig_dest.stat.exists and (gitconfig_dest.stat.inode != gitconfig_src.stat.inode or gitconfig_dest.stat.dev != gitconfig_src.stat.dev)
 
-  - name: Install .gitconfig
-    ansible.builtin.file:
-      src: resources/gitconfig
-      dest: "{{ ansible_env.HOME }}/.gitconfig"
-      owner: "{{ ansible_user_id }}"
-      group: "{{ ansible_user_id }}"
-      mode: '0644'
-      state: hard
-      force: true
+    - name: Install .gitconfig
+      ansible.builtin.file:
+        src: resources/gitconfig
+        dest: "{{ ansible_env.HOME }}/.gitconfig"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: '0644'
+        state: hard
+        force: true
 
-######################
-### Gnome Settings ###
-######################
-  - name: DNF packages for Gnome Settings
-    ansible.builtin.dnf:
-      name: python3-psutil
-      state: present
-    become: true
+  ######################
+  ### Gnome Settings ###
+  ######################
+    - name: DNF packages for Gnome Settings
+      ansible.builtin.dnf:
+        name: python3-psutil
+        state: present
+      become: true
 
-  - name: Gnome Settings
-    community.general.dconf:
-      key: "/org/gnome/desktop/interface/color-scheme"
-      value: "'prefer-dark'"
-      state: present
+    - name: Gnome Settings
+      community.general.dconf:
+        key: "/org/gnome/desktop/interface/color-scheme"
+        value: "'prefer-dark'"
+        state: present
 
-  - name: Gnome Clock
-    community.general.dconf:
-      key: "/org/gnome/desktop/interface/clock-format"
-      value: "'24h'"
-      state: present
+    - name: Gnome Clock
+      community.general.dconf:
+        key: "/org/gnome/desktop/interface/clock-format"
+        value: "'24h'"
+        state: present
 
-  - name: Install CLI tool to manage GNOME extensions
-    ansible.builtin.pip:
-      name: gnome-extensions-cli
-      extra_args: --user --upgrade
+    - name: Install CLI tool to manage GNOME extensions
+      ansible.builtin.pip:
+        name: gnome-extensions-cli
+        extra_args: --user --upgrade
 
-#  - name: Install and enable Tiling Shell
-#    ansible.builtin.command:
-#      cmd: gext install 7065 && gext enable 7065
-######################
-### Virtualization ###
-######################
-  - name: Install Virt-manager
-    ansible.builtin.dnf:
-      name: '@virtualization'
-      state: present
-    become: true
+  #  - name: Install and enable Tiling Shell
+  #    ansible.builtin.command:
+  #      cmd: gext install 7065 && gext enable 7065
+  ######################
+  ### Virtualization ###
+  ######################
+    - name: Install Virt-manager
+      ansible.builtin.dnf:
+        name: '@virtualization'
+        state: present
+      become: true
 
-#########################
-### Automatic Updates ###
-#########################
+  #########################
+  ### Automatic Updates ###
+  #########################
 
-  - name: Install DNF Automatic
-    ansible.builtin.dnf:
-      name: dnf-automatic
-      state: present
-    become: true
-  - name: Place Configuration file for DNF Automatic
-    ansible.builtin.copy:
-      src: resources/etc-dnf-automatic.conf
-      dest: /etc/dnf/automatic.conf
-      owner: root
-      group: root
-      mode: '0644'
-      force: true
-    become: true
-  - name: Enable and start DNF Automatic timer
-    ansible.builtin.systemd:
-      name: dnf-automatic.timer
-      enabled: true
-      state: started
-    become: true
+    - name: Stat dnf-automatic destination
+      ansible.builtin.stat:
+        path: /etc/dnf/automatic.conf
+      register: dnf_automatic_dest
+      become: true
 
-#############
-### Other ###
-#############
-  - name: Discord
-    community.general.flatpak:
-      name: com.discordapp.Discord
-      state: present
-      remote: flathub
+    - name: Install DNF Automatic
+      ansible.builtin.dnf:
+        name: dnf-automatic
+        state: present
+      become: true
+    - name: Place Configuration file for DNF Automatic
+      ansible.builtin.copy:
+        src: resources/etc-dnf-automatic.conf
+        dest: /etc/dnf/automatic.conf
+        owner: root
+        group: root
+        mode: '0644'
+        force: true
+      become: true
+    - name: Enable and start DNF Automatic timer
+      ansible.builtin.systemd:
+        name: dnf-automatic.timer
+        enabled: true
+        state: started
+      become: true
 
-  - name: Youtube Music
-    community.general.flatpak:
-      name: app.ytmdesktop.ytmdesktop
-      state: present
-      remote: flathub
-      
-  - name: Steam
-    community.general.flatpak:
-      name: com.valvesoftware.Steam
-      state: present
-      remote: flathub
-  
-  - name: Obsidian
-    community.general.flatpak:
-      name: md.obsidian.Obsidian
-      state: present
-      remote: flathub
+  #############
+  ### Other ###
+  #############
+    - name: Discord
+      community.general.flatpak:
+        name: com.discordapp.Discord
+        state: present
+        remote: flathub
 
-  - name: Anki
-    community.general.flatpak:
-      name: net.ankiweb.Anki
-      state: present
-      remote: flathub
+    - name: Youtube Music
+      community.general.flatpak:
+        name: app.ytmdesktop.ytmdesktop
+        state: present
+        remote: flathub
+
+    - name: Steam
+      community.general.flatpak:
+        name: com.valvesoftware.Steam
+        state: present
+        remote: flathub
+
+    - name: Obsidian
+      community.general.flatpak:
+        name: md.obsidian.Obsidian
+        state: present
+        remote: flathub
+
+    - name: Anki
+      community.general.flatpak:
+        name: net.ankiweb.Anki
+        state: present
+        remote: flathub
