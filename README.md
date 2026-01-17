@@ -1,6 +1,6 @@
-# Desktop Config
+# Fresh Install (Fedora)
 
-Work in progress
+Automated setup for a fresh Fedora workstation: base packages, dotfiles, GNOME tweaks, and core apps.
 
 ## Bootstrap
 
@@ -10,10 +10,10 @@ Run this before the playbook to ensure Ansible is available:
 ./pre-ansible.sh
 ```
 
-## Tests
+## Run
 
-Run check-mode without sudo-tagged tasks for any playbook you change (example shown):
+Run the main playbook:
 
 ```bash
-ansible-playbook fedora.yml --check --skip-tags "sudo"
+ansible-playbook -K fedora.yml
 ```
