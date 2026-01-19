@@ -28,3 +28,27 @@
     name: net.ankiweb.Anki
     state: present
     remote: flathub
+
+- name: Protontricks
+  community.general.flatpak:
+    name: com.github.Matoking.protontricks
+    state: present
+    remote: flathub
+
+- name: Visual Studio Code
+  community.general.flatpak:
+    name: com.visualstudio.code
+    state: present
+    remote: flathub
+
+- name: GIMP
+  community.general.flatpak:
+    name: org.gimp.GIMP
+    state: present
+    remote: flathub
+
+- name: Signal
+  community.general.flatpak:
+    name: org.signal.Signal
+    state: present
+    remote: flathub
