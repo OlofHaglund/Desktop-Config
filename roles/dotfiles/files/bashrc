@@ -7,7 +7,7 @@ fi
 
 # User specific environment
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+    PATH="$HOME/go/bin:$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 export PATH
 
@@ -19,6 +19,19 @@ export VISUAL=vim
 export EDITOR="$VISUAL"
 
 alias rota='codex'
+
+# Example
+# user @ development ~/Documents/example/ (master)
+# └─ ▶ 
+# source /usr/share/git-core/contrib/completion/git-prompt.sh 
+export PS1='\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\] @ \[\033[0;36m\]\h \w\[\033[0;32m\]$(__git_ps1)\n\[\033[0;32m\]└─\[\033[0m\033[0;32m\]\[\033[0m\033[0;32m\] ▶\[\033[0m\] '
+
+# https://coderwall.com/p/euwpig/a-better-git-log
+# git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+source ~/.bash_git
 
 # User specific aliases and functions
 if [ -d ~/.bashrc.d ]; then

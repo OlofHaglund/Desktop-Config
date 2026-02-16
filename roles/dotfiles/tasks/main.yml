@@ -62,3 +62,10 @@
     mode: '0644'
     state: hard
     force: true
+
+- name: Ensure git prompt script is present
+  ansible.builtin.get_url:
+    url: https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.bash_git"
+    mode: '0644'
+    force: false
