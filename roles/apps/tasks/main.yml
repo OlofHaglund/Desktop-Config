@@ -52,3 +52,6 @@
     name: org.signal.Signal
     state: present
     remote: flathub
+
+- name: Include TickTick Claude CLI tasks
+  ansible.builtin.include_tasks: ticktick.yml

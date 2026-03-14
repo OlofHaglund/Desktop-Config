@@ -1,5 +1,5 @@
 ---
-- name: Ensure everything is up to date
+- name: Ensure everything is up to date # noqa: package-latest
   ansible.builtin.dnf:
     name: '*'
     state: latest
