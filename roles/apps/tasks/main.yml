@@ -53,5 +53,11 @@
     state: present
     remote: flathub
 
+- name: Install Claude Code
+  community.general.npm:
+    name: "@anthropic-ai/claude-code"
+    global: true
+    state: present
+
 - name: Include TickTick Claude CLI tasks
   ansible.builtin.include_tasks: ticktick.yml

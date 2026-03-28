@@ -70,15 +70,15 @@
     mode: '0644'
     force: false
 
-- name: Ensure ~/.codex directory exists
+- name: Ensure ~/.claude directory exists
   ansible.builtin.file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.codex"
+    path: "{{ ansible_facts['env']['HOME'] }}/.claude"
     state: directory
     mode: '0755'
 
-- name: Ensure Codex AGENTS.md symlink points to Rota AGENTS.md
-  ansible.builtin.file:
-    src: "{{ ansible_facts['env']['HOME'] }}/Documents/PKMS/00 - Rota/AGENTS.md"
-    dest: "{{ ansible_facts['env']['HOME'] }}/.codex/AGENTS.md"
-    state: link
-    force: true
+- name: Create Claude global CLAUDE.md pointing to Rota AGENTS.md
+  ansible.builtin.copy:
+    content: "@{{ ansible_facts['env']['HOME'] }}/Documents/PKMS/00 - Rota/AGENTS.md\n"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.claude/CLAUDE.md"
+    mode: '0644'
+    force: false

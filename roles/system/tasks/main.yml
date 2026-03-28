@@ -13,6 +13,8 @@
       - vim
       - flatpak
       - python3-pip
+      - nodejs
+      - npm
     state: present
   become: true
   tags:

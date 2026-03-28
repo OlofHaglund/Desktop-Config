@@ -21,7 +21,7 @@ export PATH
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
-alias rota='codex'
+alias rota='claude'
 
 # Example
 # user @ development ~/Documents/example/ (master)
