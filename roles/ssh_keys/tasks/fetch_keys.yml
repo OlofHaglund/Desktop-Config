@@ -1,0 +1,67 @@
+---
+# fetch_keys.yml
+# Lists all SSH Key items (type 5) from the unlocked vault and writes each
+# private and public key to ~/.ssh/ with correct permissions.
+# Creates ~/.ssh/.provisioned on success to prevent re-fetching on future runs.
+
+- name: List all vault items
+  ansible.builtin.command: bw list items --session "{{ ssh_keys_bw_session }}"
+  no_log: true
+  register: ssh_keys_bw_items_raw
+  changed_when: false
+  tags:
+    - home
+
+- name: Parse SSH Key items from vault response
+  ansible.builtin.set_fact:
+    ssh_keys_items: "{{ ssh_keys_bw_items_raw.stdout | from_json | selectattr('type', 'equalto', 5) | list }}"
+  no_log: true
+  tags:
+    - home
+
+- name: Report number of SSH Key items found
+  ansible.builtin.debug:
+    msg: "Found {{ ssh_keys_items | length }} SSH Key item(s) in vault."
+  tags:
+    - home
+
+- name: Ensure ~/.ssh directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.ssh"
+    state: directory
+    mode: '0700'
+  tags:
+    - home
+
+- name: Write SSH private keys
+  ansible.builtin.copy:
+    content: "{{ item.sshKey.privateKey }}\n"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.ssh/{{ item.name | lower | regex_replace('[^a-z0-9_-]', '_') }}"
+    mode: '0600'
+  loop: "{{ ssh_keys_items }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+  tags:
+    - home
+
+- name: Write SSH public keys
+  ansible.builtin.copy:
+    content: "{{ item.sshKey.publicKey }}\n"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.ssh/{{ item.name | lower | regex_replace('[^a-z0-9_-]', '_') }}.pub"
+    mode: '0644'
+  loop: "{{ ssh_keys_items }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+  when: item.sshKey.publicKey | default('') | length > 0
+  tags:
+    - home
+
+- name: Mark SSH keys as provisioned
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.ssh/.provisioned"
+    state: touch
+    mode: '0600'
+  tags:
+    - home

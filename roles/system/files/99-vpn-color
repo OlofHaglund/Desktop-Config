@@ -1,0 +1,12 @@
+#!/bin/bash
+# NetworkManager Dispatcher: Signal VPN status via a temp file
+STATUS_FILE="/tmp/vpn_active"
+
+case "$2" in
+    vpn-up)
+        touch "$STATUS_FILE"
+        ;;
+    vpn-down)
+        rm -f "$STATUS_FILE"
+        ;;
+esac

@@ -1,0 +1,11 @@
+[Unit]
+Description=VPN Color Listener for Open Bar GNOME extension
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/vpn-color-listener.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

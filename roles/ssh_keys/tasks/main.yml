@@ -1,0 +1,41 @@
+---
+# main.yml
+# Entry point for the ssh_keys role.
+# Skips all tasks if ~/.ssh/.provisioned already exists (keys already fetched).
+
+- name: Check if SSH keys already provisioned
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.ssh/.provisioned"
+  register: ssh_keys_provisioned
+  tags:
+    - home
+
+- name: Include Bitwarden CLI install tasks
+  ansible.builtin.include_tasks: ensure_bw.yml
+  when: not ssh_keys_provisioned.stat.exists
+  tags:
+    - home
+
+- name: Include credential prompt tasks
+  ansible.builtin.include_tasks: prompt.yml
+  when: not ssh_keys_provisioned.stat.exists
+  tags:
+    - home
+
+- name: Include Bitwarden login and unlock tasks
+  ansible.builtin.include_tasks: login.yml
+  when: not ssh_keys_provisioned.stat.exists
+  tags:
+    - home
+
+- name: Include SSH key fetch tasks
+  ansible.builtin.include_tasks: fetch_keys.yml
+  when: not ssh_keys_provisioned.stat.exists
+  tags:
+    - home
+
+- name: Include Bitwarden cleanup tasks
+  ansible.builtin.include_tasks: cleanup.yml
+  when: not ssh_keys_provisioned.stat.exists
+  tags:
+    - home

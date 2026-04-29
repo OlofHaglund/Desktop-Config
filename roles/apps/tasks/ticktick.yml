@@ -1,4 +1,9 @@
 ---
+# ticktick.yml
+# Clones the ticktick_claude repository to /opt/ticktick_claude.
+# The project uses TickTick's MCP server — no CLI install or credentials needed.
+# On first use, run /mcp in Claude Code to complete OAuth authorization.
+
 - name: TickTick Claude CLI directory
   ansible.builtin.file:
     path: /opt/ticktick_claude
@@ -9,6 +14,7 @@
     recurse: true
   become: true
   tags:
+    - home
     - sudo
 
 - name: TickTick Claude CLI source
@@ -20,81 +26,5 @@
     force: true
   become: true
   tags:
-    - sudo
-
-- name: TickTick Claude CLI .env status
-  ansible.builtin.stat:
-    path: /opt/ticktick_claude/.env
-  register: apps_ticktick_env_file
-  become: true
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI prompt client id
-  ansible.builtin.pause:
-    prompt: "TickTick Client ID"
-    echo: true
-  register: apps_ticktick_client_id_prompt
-  when: not apps_ticktick_env_file.stat.exists
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI prompt client secret
-  ansible.builtin.pause:
-    prompt: "TickTick Client Secret"
-    echo: false
-  register: apps_ticktick_client_secret_prompt
-  when: not apps_ticktick_env_file.stat.exists
-  no_log: true
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI .env from example
-  ansible.builtin.copy:
-    src: /opt/ticktick_claude/.env.example
-    dest: /opt/ticktick_claude/.env
-    remote_src: true
-    owner: "{{ ansible_facts['user_id'] }}"
-    group: "{{ ansible_facts['user_id'] }}"
-    mode: '0600'
-    force: false
-  when: not apps_ticktick_env_file.stat.exists
-  become: true
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI set client id
-  ansible.builtin.lineinfile:
-    path: /opt/ticktick_claude/.env
-    regexp: '^TICKTICK_CLIENT_ID='
-    line: "TICKTICK_CLIENT_ID={{ apps_ticktick_client_id_prompt.user_input }}"
-    owner: "{{ ansible_facts['user_id'] }}"
-    group: "{{ ansible_facts['user_id'] }}"
-    mode: '0600'
-  when: not apps_ticktick_env_file.stat.exists
-  become: true
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI set client secret
-  ansible.builtin.lineinfile:
-    path: /opt/ticktick_claude/.env
-    regexp: '^TICKTICK_CLIENT_SECRET='
-    line: "TICKTICK_CLIENT_SECRET={{ apps_ticktick_client_secret_prompt.user_input }}"
-    owner: "{{ ansible_facts['user_id'] }}"
-    group: "{{ ansible_facts['user_id'] }}"
-    mode: '0600'
-  when: not apps_ticktick_env_file.stat.exists
-  become: true
-  no_log: true
-  tags:
-    - sudo
-
-- name: TickTick Claude CLI global install
-  ansible.builtin.pip:
-    name: /opt/ticktick_claude
-    editable: true
-    executable: pip3
-  become: true
-  tags:
+    - home
     - sudo

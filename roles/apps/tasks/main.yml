@@ -4,60 +4,87 @@
     name: com.discordapp.Discord
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Youtube Music
   community.general.flatpak:
     name: app.ytmdesktop.ytmdesktop
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Steam
   community.general.flatpak:
     name: com.valvesoftware.Steam
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Obsidian
   community.general.flatpak:
     name: md.obsidian.Obsidian
     state: present
     remote: flathub
+  tags:
+    - home
+    - work
 
 - name: Anki
   community.general.flatpak:
     name: net.ankiweb.Anki
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Protontricks
   community.general.flatpak:
     name: com.github.Matoking.protontricks
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Visual Studio Code
   community.general.flatpak:
     name: com.visualstudio.code
     state: present
     remote: flathub
+  tags:
+    - home
+    - work
 
 - name: GIMP
   community.general.flatpak:
     name: org.gimp.GIMP
     state: present
     remote: flathub
+  tags:
+    - home
+    - work
 
 - name: Signal
   community.general.flatpak:
     name: org.signal.Signal
     state: present
     remote: flathub
+  tags:
+    - home
 
 - name: Install Claude Code
   community.general.npm:
     name: "@anthropic-ai/claude-code"
     global: true
     state: present
+  become: true
+  tags:
+    - home
+    - sudo
 
 - name: Include TickTick Claude CLI tasks
   ansible.builtin.include_tasks: ticktick.yml
+  tags:
+    - home

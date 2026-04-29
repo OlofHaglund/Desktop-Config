@@ -1,0 +1,19 @@
+---
+# cleanup.yml
+# Locks the vault and logs out of Bitwarden regardless of prior task outcome.
+
+- name: Lock Bitwarden vault
+  ansible.builtin.command: bw lock
+  changed_when: true
+  failed_when: false
+  no_log: true
+  tags:
+    - home
+
+- name: Log out of Bitwarden
+  ansible.builtin.command: bw logout
+  changed_when: true
+  failed_when: false
+  no_log: true
+  tags:
+    - home

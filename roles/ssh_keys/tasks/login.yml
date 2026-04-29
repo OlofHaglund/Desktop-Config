@@ -1,0 +1,47 @@
+---
+# login.yml
+# Checks Bitwarden login status, logs in with API key if needed, then unlocks
+# the vault to obtain a session token stored as ssh_keys_bw_session.
+
+- name: Check Bitwarden login status
+  ansible.builtin.command: bw status
+  register: ssh_keys_bw_status_raw
+  changed_when: false
+  no_log: true
+  tags:
+    - home
+
+- name: Parse Bitwarden status
+  ansible.builtin.set_fact:
+    ssh_keys_bw_status: "{{ ssh_keys_bw_status_raw.stdout | from_json }}"
+  no_log: true
+  tags:
+    - home
+
+- name: Log in to Bitwarden with API key
+  ansible.builtin.command: bw login --apikey
+  environment:
+    BW_CLIENTID: "{{ ssh_keys_client_id_prompt.user_input }}"
+    BW_CLIENTSECRET: "{{ ssh_keys_client_secret_prompt.user_input }}"
+  no_log: true
+  changed_when: true
+  when: ssh_keys_bw_status.status == 'unauthenticated'
+  tags:
+    - home
+
+- name: Unlock Bitwarden vault
+  ansible.builtin.command: bw unlock --passwordenv BW_MASTER_PASS --raw
+  environment:
+    BW_MASTER_PASS: "{{ ssh_keys_master_password_prompt.user_input }}"
+  no_log: true
+  register: ssh_keys_bw_unlock_result
+  changed_when: true
+  tags:
+    - home
+
+- name: Store session token
+  ansible.builtin.set_fact:
+    ssh_keys_bw_session: "{{ ssh_keys_bw_unlock_result.stdout }}"
+  no_log: true
+  tags:
+    - home

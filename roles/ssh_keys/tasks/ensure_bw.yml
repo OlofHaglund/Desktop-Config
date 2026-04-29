@@ -1,0 +1,13 @@
+---
+# ensure_bw.yml
+# Installs the Bitwarden CLI via npm if not already present.
+
+- name: Install Bitwarden CLI via npm
+  community.general.npm:
+    name: "@bitwarden/cli"
+    global: true
+    state: present
+  become: true
+  tags:
+    - home
+    - sudo

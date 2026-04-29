@@ -3,11 +3,17 @@
   ansible.builtin.stat:
     path: "{{ role_path }}/files/gitconfig"
   register: dotfiles_gitconfig_src
+  tags:
+    - home
+    - work
 
 - name: Stat gitconfig destination
   ansible.builtin.stat:
     path: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
   register: dotfiles_gitconfig_dest
+  tags:
+    - home
+    - work
 
 - name: Backup existing gitconfig when not already linked
   ansible.builtin.copy:
@@ -20,6 +26,9 @@
     - dotfiles_gitconfig_dest.stat.exists
     - dotfiles_gitconfig_dest.stat.inode != dotfiles_gitconfig_src.stat.inode or
       dotfiles_gitconfig_dest.stat.dev != dotfiles_gitconfig_src.stat.dev
+  tags:
+    - home
+    - work
 
 - name: Install .gitconfig
   ansible.builtin.file:
@@ -30,16 +39,25 @@
     mode: '0644'
     state: hard
     force: true
+  tags:
+    - home
+    - work
 
 - name: Stat bashrc source
   ansible.builtin.stat:
     path: "{{ role_path }}/files/bashrc"
   register: dotfiles_bashrc_src
+  tags:
+    - home
+    - work
 
 - name: Stat bashrc destination
   ansible.builtin.stat:
     path: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
   register: dotfiles_bashrc_dest
+  tags:
+    - home
+    - work
 
 - name: Backup existing bashrc when not already linked
   ansible.builtin.copy:
@@ -52,6 +70,9 @@
     - dotfiles_bashrc_dest.stat.exists
     - dotfiles_bashrc_dest.stat.inode != dotfiles_bashrc_src.stat.inode or
       dotfiles_bashrc_dest.stat.dev != dotfiles_bashrc_src.stat.dev
+  tags:
+    - home
+    - work
 
 - name: Install .bashrc
   ansible.builtin.file:
@@ -62,6 +83,9 @@
     mode: '0644'
     state: hard
     force: true
+  tags:
+    - home
+    - work
 
 - name: Ensure git prompt script is present
   ansible.builtin.get_url:
@@ -69,12 +93,18 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.bash_git"
     mode: '0644'
     force: false
+  tags:
+    - home
+    - work
 
 - name: Ensure ~/.claude directory exists
   ansible.builtin.file:
     path: "{{ ansible_facts['env']['HOME'] }}/.claude"
     state: directory
     mode: '0755'
+  tags:
+    - home
+    - work
 
 - name: Create Claude global CLAUDE.md pointing to Rota AGENTS.md
   ansible.builtin.copy:
@@ -82,3 +112,6 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.claude/CLAUDE.md"
     mode: '0644'
     force: false
+  tags:
+    - home
+    - work

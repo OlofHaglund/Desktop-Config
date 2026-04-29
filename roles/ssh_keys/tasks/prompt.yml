@@ -1,0 +1,29 @@
+---
+# prompt.yml
+# Interactively prompts for Bitwarden personal API key credentials and master password.
+
+- name: Prompt for Bitwarden client_id
+  ansible.builtin.pause:
+    prompt: "Bitwarden client_id"
+    echo: true
+  register: ssh_keys_client_id_prompt
+  tags:
+    - home
+
+- name: Prompt for Bitwarden client_secret
+  ansible.builtin.pause:
+    prompt: "Bitwarden client_secret"
+    echo: false
+  register: ssh_keys_client_secret_prompt
+  no_log: true
+  tags:
+    - home
+
+- name: Prompt for Bitwarden master password
+  ansible.builtin.pause:
+    prompt: "Bitwarden master password"
+    echo: false
+  register: ssh_keys_master_password_prompt
+  no_log: true
+  tags:
+    - home
