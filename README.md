@@ -2,19 +2,24 @@
 
 Automated setup for a fresh Fedora workstation: base packages, dotfiles, GNOME tweaks, and core apps.
 
-TickTick source is kept in `/opt/ticktick_claude`. It uses TickTick's MCP server — no CLI install or credentials needed. On first use, run `/mcp` in Claude Code to complete OAuth authorization.
+## Prerequisites
 
-## Bootstrap
+- Fresh Fedora installation with a user account
+- This repository cloned locally
+- Internet access
 
-Run this before the playbook to ensure Ansible is available:
+## 1. Bootstrap
+
+Run this before the playbook to install Ansible and its dependencies:
 
 ```bash
 ./pre-ansible.sh
 ```
 
-## Run
+## 2. Run the playbook
 
-Playbooks are tagged by machine profile. Use `--tags home` or `--tags work` to target the correct profile.
+Profiles are selected with `--tags`. Use `home` or `work` depending on the machine.
+`-K` prompts for your sudo password (required for system-level tasks).
 
 **Home machine:**
 ```bash
@@ -26,22 +31,28 @@ ansible-playbook -K fedora.yml --tags home
 ansible-playbook -K fedora.yml --tags work
 ```
 
-**Dry-run (no sudo tasks):**
+**Dry-run (skips sudo tasks, no changes made):**
 ```bash
-ansible-playbook fedora.yml --check --skip-tags sudo --tags home
+ansible-playbook fedora.yml --check --skip-tags sudo --tags work
 ```
 
-### Profile differences
+## 3. After the playbook
 
-| Tag | Includes |
-|-----|----------|
-| `home` | All common tasks + Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick |
-| `work` | All common tasks + Open Bar GNOME extension, VPN topbar color changer |
+- **Log out and back in** for GNOME extensions to activate (Open Bar, etc.)
 
-## SSH keys (home machine)
+## What each profile installs
 
-The `ssh_keys` role runs automatically as part of `ansible-playbook -K fedora.yml --tags home`. On first run it prompts for your Bitwarden **personal API key** (`client_id` and `client_secret`) and your **master password**, then fetches all SSH Key items from the vault and writes them to `~/.ssh/`.
+All profiles install: system updates, base packages (vim, flatpak, nodejs, npm), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), and common GNOME settings (dark mode, 24h clock, Firefox autostart).
 
-The personal API key is found at: Bitwarden web vault → Account Settings → Security → API Key.
+| Profile | Additional installs |
+|---------|---------------------|
+| `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH keys from Bitwarden |
+| `work`  | Open Bar GNOME extension (styled topbar), VPN topbar color changer |
 
-Keys are named after their Bitwarden item name (lowercased, spaces replaced with underscores) and written with `0600`/`0644` permissions. A sentinel file `~/.ssh/.provisioned` is created on success so the prompts are skipped on subsequent runs.
+## SSH keys — home machine only
+
+SSH keys are fetched automatically from Bitwarden as part of `--tags home`. On first run you will be prompted for your Bitwarden **personal API key** (`client_id`, `client_secret`) and **master password**.
+
+Find your personal API key at: Bitwarden web vault → Account Settings → Security → API Key.
+
+Keys are named after their Bitwarden item name (lowercased, spaces → underscores) and written to `~/.ssh/` with `0600`/`0644` permissions. A sentinel file `~/.ssh/.provisioned` is created so the prompts are skipped on re-runs.
