@@ -1,0 +1,3 @@
+---
+# Bitwarden server the CLI talks to. Use https://vault.bitwarden.com for US accounts.
+ssh_keys_bw_server: "https://vault.bitwarden.eu"

@@ -18,6 +18,23 @@
   tags:
     - home
 
+- name: Read configured Bitwarden server
+  ansible.builtin.command: bw config server
+  register: ssh_keys_bw_server_raw
+  changed_when: false
+  when: ssh_keys_bw_status.status == 'unauthenticated'
+  tags:
+    - home
+
+- name: Point Bitwarden CLI at the configured server
+  ansible.builtin.command: bw config server "{{ ssh_keys_bw_server }}"
+  changed_when: true
+  when:
+    - ssh_keys_bw_status.status == 'unauthenticated'
+    - ssh_keys_bw_server_raw.stdout | trim != ssh_keys_bw_server
+  tags:
+    - home
+
 - name: Log in to Bitwarden with API key
   ansible.builtin.command: bw login --apikey
   environment:

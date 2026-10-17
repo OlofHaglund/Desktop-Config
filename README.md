@@ -55,4 +55,6 @@ SSH keys are fetched automatically from Bitwarden as part of `--tags home`. On f
 
 Find your personal API key at: Bitwarden web vault → Account Settings → Security → API Key.
 
+The Bitwarden CLI is pointed at the EU server (`https://vault.bitwarden.eu`) by default. For a US account, override it with `-e ssh_keys_bw_server=https://vault.bitwarden.com`.
+
 Keys are named after their Bitwarden item name (lowercased, spaces → underscores) and written to `~/.ssh/` with `0600`/`0644` permissions. A sentinel file `~/.ssh/.provisioned` is created so the prompts are skipped on re-runs.
