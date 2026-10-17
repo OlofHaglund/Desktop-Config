@@ -7,15 +7,23 @@ if command -v ansible-playbook >/dev/null 2>&1; then
 fi
 
 if ! command -v pip3 >/dev/null 2>&1; then
-  echo "pip3 is required to install Ansible. Please install python3-pip first." >&2
-  exit 1
+  echo "Installing python3-pip..."
+  if command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y python3-pip
+  elif command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update
+    sudo apt-get install -y python3-pip
+  else
+    echo "No supported package manager found (dnf/apt-get). Please install python3-pip manually." >&2
+    exit 1
+  fi
 fi
 
 echo "Installing Ansible via pip3 (ansible-dev-tools)..."
 pip3 install --user ansible-dev-tools
 
 if command -v ansible-galaxy >/dev/null 2>&1; then
-  if ansible-galaxy collection list | rg -q '^community\.general\b'; then
+  if ansible-galaxy collection list | grep -E '^community\.general\b' >/dev/null; then
     echo "Ansible collection community.general is already installed."
   else
     echo "Installing Ansible collection community.general..."
