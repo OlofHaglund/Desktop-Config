@@ -17,6 +17,7 @@
       - python3-pip
       - nodejs
       - npm
+      - alacritty
     state: present
   become: true
   tags:
