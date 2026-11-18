@@ -7,6 +7,6 @@
   roles:
     - system
     - dotfiles
-    - gnome
+    - veshell
     - apps
     - ssh_keys

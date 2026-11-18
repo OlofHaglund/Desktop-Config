@@ -1,6 +1,6 @@
 # Fresh Install (Fedora)
 
-Automated setup for a fresh Fedora workstation: base packages, dotfiles, GNOME tweaks, and core apps.
+Automated setup for a fresh Fedora workstation: base packages, dotfiles, the Veshell desktop environment, and core apps.
 
 ## Prerequisites
 
@@ -38,16 +38,16 @@ ansible-playbook fedora.yml --check --skip-tags sudo --tags work
 
 ## 3. After the playbook
 
-- **Log out and back in** for GNOME extensions to activate (Open Bar, etc.)
+- **Log out and back in**, then select the **Veshell** session at the login screen.
 
 ## What each profile installs
 
-All profiles install: system updates, base packages (vim, flatpak, nodejs, npm), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), and common GNOME settings (dark mode, 24h clock, Firefox autostart).
+All profiles install: system updates, base packages (vim, flatpak, nodejs, npm), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), and Veshell (enabled from the `@free-explorers` COPR, `veshell-bin`).
 
 | Profile | Additional installs |
 |---------|---------------------|
 | `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH keys from Bitwarden |
-| `work`  | Open Bar GNOME extension (styled topbar), VPN topbar color changer |
+| `work`  | — |
 
 ## SSH keys — home machine only
 

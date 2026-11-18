@@ -1,0 +1,30 @@
+---
+- name: Ensure python3-dnf is available for the copr module
+  ansible.builtin.dnf:
+    name: python3-dnf
+    state: present
+  become: true
+  tags:
+    - home
+    - work
+    - sudo
+
+- name: Enable Veshell COPR repository
+  community.general.copr:
+    name: "@free-explorers/veshell"
+    state: enabled
+  become: true
+  tags:
+    - home
+    - work
+    - sudo
+
+- name: Install Veshell
+  ansible.builtin.dnf:
+    name: veshell-bin
+    state: present
+  become: true
+  tags:
+    - home
+    - work
+    - sudo
