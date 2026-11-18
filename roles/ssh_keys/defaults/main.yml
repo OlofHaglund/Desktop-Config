@@ -1,3 +1,7 @@
 ---
 # Bitwarden server the CLI talks to. Use https://vault.bitwarden.com for US accounts.
 ssh_keys_bw_server: "https://vault.bitwarden.eu"
+
+# Bitwarden SSH Key item (type 5) fetched per profile tag.
+ssh_keys_home_key_name: "Generic Home SSH Key"
+ssh_keys_work_key_name: "Github Work SSH Key"

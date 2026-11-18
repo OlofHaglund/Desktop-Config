@@ -9,33 +9,39 @@
   register: ssh_keys_provisioned
   tags:
     - home
+    - work
 
 - name: Include Bitwarden CLI install tasks
   ansible.builtin.include_tasks: ensure_bw.yml
   when: not ssh_keys_provisioned.stat.exists
   tags:
     - home
+    - work
 
 - name: Include credential prompt tasks
   ansible.builtin.include_tasks: prompt.yml
   when: not ssh_keys_provisioned.stat.exists
   tags:
     - home
+    - work
 
 - name: Include Bitwarden login and unlock tasks
   ansible.builtin.include_tasks: login.yml
   when: not ssh_keys_provisioned.stat.exists
   tags:
     - home
+    - work
 
 - name: Include SSH key fetch tasks
   ansible.builtin.include_tasks: fetch_keys.yml
   when: not ssh_keys_provisioned.stat.exists
   tags:
     - home
+    - work
 
 - name: Include Bitwarden cleanup tasks
   ansible.builtin.include_tasks: cleanup.yml
   when: not ssh_keys_provisioned.stat.exists
   tags:
     - home
+    - work

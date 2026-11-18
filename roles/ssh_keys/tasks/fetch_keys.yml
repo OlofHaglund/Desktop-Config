@@ -1,7 +1,8 @@
 ---
 # fetch_keys.yml
-# Lists all SSH Key items (type 5) from the unlocked vault and writes each
-# private and public key to ~/.ssh/ with correct permissions.
+# Fetches the SSH Key item (type 5) selected for the active profile tag from
+# the unlocked vault and writes its private and public key to ~/.ssh/ with
+# correct permissions.
 # Creates ~/.ssh/.provisioned on success to prevent re-fetching on future runs.
 
 - name: List all vault items
@@ -11,19 +12,55 @@
   changed_when: false
   tags:
     - home
+    - work
 
-- name: Parse SSH Key items from vault response
+- name: Select SSH key item name (home profile)
   ansible.builtin.set_fact:
-    ssh_keys_items: "{{ ssh_keys_bw_items_raw.stdout | from_json | selectattr('type', 'equalto', 5) | list }}"
+    ssh_keys_item_name: "{{ ssh_keys_home_key_name }}"
+    ssh_keys_profile_tag_count: "{{ (ssh_keys_profile_tag_count | default(0) | int) + 1 }}"
+  tags:
+    - home
+
+- name: Select SSH key item name (work profile)
+  ansible.builtin.set_fact:
+    ssh_keys_item_name: "{{ ssh_keys_work_key_name }}"
+    ssh_keys_profile_tag_count: "{{ (ssh_keys_profile_tag_count | default(0) | int) + 1 }}"
+  tags:
+    - work
+
+- name: Fail if no single profile tag is active
+  ansible.builtin.fail:
+    msg: "Run the playbook with exactly one profile tag: --tags home or --tags work."
+  when: (ssh_keys_profile_tag_count | default(0) | int) != 1
+  tags:
+    - home
+    - work
+
+- name: Filter SSH Key item for this profile
+  ansible.builtin.set_fact:
+    ssh_keys_items: >-
+      {{ ssh_keys_bw_items_raw.stdout | from_json
+         | selectattr('type', 'equalto', 5)
+         | selectattr('name', 'equalto', ssh_keys_item_name) | list }}
   no_log: true
   tags:
     - home
+    - work
 
-- name: Report number of SSH Key items found
-  ansible.builtin.debug:
-    msg: "Found {{ ssh_keys_items | length }} SSH Key item(s) in vault."
+- name: Fail if the profile's SSH key item was not found
+  ansible.builtin.fail:
+    msg: "SSH key item '{{ ssh_keys_item_name }}' not found in the Bitwarden vault."
+  when: ssh_keys_items | length == 0
   tags:
     - home
+    - work
+
+- name: Report the SSH key item selected
+  ansible.builtin.debug:
+    msg: "Selected SSH key item '{{ ssh_keys_item_name }}' ({{ ssh_keys_items | length }} match(es))."
+  tags:
+    - home
+    - work
 
 - name: Ensure ~/.ssh directory exists
   ansible.builtin.file:
@@ -32,6 +69,7 @@
     mode: '0700'
   tags:
     - home
+    - work
 
 - name: Write SSH private keys
   ansible.builtin.copy:
@@ -44,6 +82,7 @@
   no_log: true
   tags:
     - home
+    - work
 
 - name: Write SSH public keys
   ansible.builtin.copy:
@@ -57,6 +96,7 @@
   when: item.sshKey.publicKey | default('') | length > 0
   tags:
     - home
+    - work
 
 - name: Mark SSH keys as provisioned
   ansible.builtin.file:
@@ -65,3 +105,4 @@
     mode: '0600'
   tags:
     - home
+    - work

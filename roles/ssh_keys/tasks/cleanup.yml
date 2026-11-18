@@ -9,6 +9,7 @@
   no_log: true
   tags:
     - home
+    - work
 
 - name: Log out of Bitwarden
   ansible.builtin.command: bw logout
@@ -17,3 +18,4 @@
   no_log: true
   tags:
     - home
+    - work

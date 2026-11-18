@@ -46,15 +46,20 @@ All profiles install: system updates, base packages (vim, flatpak, nodejs, npm),
 
 | Profile | Additional installs |
 |---------|---------------------|
-| `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH keys from Bitwarden |
-| `work`  | — |
+| `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH key from Bitwarden (Generic Home SSH Key) |
+| `work`  | SSH key from Bitwarden (Github Work SSH Key) |
 
-## SSH keys — home machine only
+## SSH keys
 
-SSH keys are fetched automatically from Bitwarden as part of `--tags home`. On first run you will be prompted for your Bitwarden **personal API key** (`client_id`, `client_secret`) and **master password**.
+SSH keys are fetched automatically from Bitwarden as part of the selected profile. On first run you will be prompted for your Bitwarden **personal API key** (`client_id`, `client_secret`) and **master password**.
+
+| Profile | Bitwarden item fetched |
+|---------|------------------------|
+| `home`  | Generic Home SSH Key   |
+| `work`  | Github Work SSH Key    |
 
 Find your personal API key at: Bitwarden web vault → Account Settings → Security → API Key.
 
-The Bitwarden CLI is pointed at the EU server (`https://vault.bitwarden.eu`) by default. For a US account, override it with `-e ssh_keys_bw_server=https://vault.bitwarden.com`.
+The Bitwarden CLI is pointed at the EU server (`https://vault.bitwarden.eu`) by default. For a US account, override it with `-e ssh_keys_bw_server=https://vault.bitwarden.com`. Item names can be overridden with `-e ssh_keys_home_key_name=...` / `-e ssh_keys_work_key_name=...`.
 
 Keys are named after their Bitwarden item name (lowercased, spaces → underscores) and written to `~/.ssh/` with `0600`/`0644` permissions. A sentinel file `~/.ssh/.provisioned` is created so the prompts are skipped on re-runs.

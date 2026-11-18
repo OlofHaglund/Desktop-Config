@@ -9,6 +9,7 @@
   register: ssh_keys_client_id_prompt
   tags:
     - home
+    - work
 
 - name: Prompt for Bitwarden client_secret
   ansible.builtin.pause:
@@ -18,6 +19,7 @@
   no_log: true
   tags:
     - home
+    - work
 
 - name: Prompt for Bitwarden master password
   ansible.builtin.pause:
@@ -27,3 +29,4 @@
   no_log: true
   tags:
     - home
+    - work
