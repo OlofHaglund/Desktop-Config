@@ -1,0 +1,58 @@
+---
+# main.yml
+# Deploy the Firefox policy for the active profile.
+#
+# Only the policy matching the active profile tag (home, work, kali) is
+# installed, as /etc/firefox/policies.json — the file Firefox reads on
+# Linux. Fill in the templates in files/policies/ as needed and re-run
+# the playbook to redeploy.
+
+- name: Ensure /etc/firefox directory
+  ansible.builtin.file:
+    path: /etc/firefox
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags:
+    - home
+    - work
+    - kali
+    - sudo
+
+- name: Install Firefox policy (home)
+  ansible.builtin.copy:
+    src: policies/home.json
+    dest: /etc/firefox/policies.json
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - home
+    - sudo
+
+- name: Install Firefox policy (work)
+  ansible.builtin.copy:
+    src: policies/work.json
+    dest: /etc/firefox/policies.json
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - work
+    - sudo
+
+- name: Install Firefox policy (kali)
+  ansible.builtin.copy:
+    src: policies/kali.json
+    dest: /etc/firefox/policies.json
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags:
+    - kali
+    - sudo

@@ -31,6 +31,11 @@ ansible-playbook -K fedora.yml --tags home
 ansible-playbook -K fedora.yml --tags work
 ```
 
+**Kali (Firefox policy only):**
+```bash
+ansible-playbook -K fedora.yml --tags kali
+```
+
 **Dry-run (skips sudo tasks, no changes made):**
 ```bash
 ansible-playbook fedora.yml --check --skip-tags sudo --tags work
@@ -42,12 +47,13 @@ ansible-playbook fedora.yml --check --skip-tags sudo --tags work
 
 ## What each profile installs
 
-All profiles install: system updates, base packages (vim, flatpak, nodejs, npm, git), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), Veshell (enabled from the `@free-explorers` COPR, `veshell-bin`), and the PKMS repository cloned to `~/Documents/PKMS` (see [Private repositories](#private-repositories)).
+All profiles install: system updates, base packages (vim, flatpak, nodejs, npm, git), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), Veshell (enabled from the `@free-explorers` COPR, `veshell-bin`), the PKMS repository cloned to `~/Documents/PKMS` (see [Private repositories](#private-repositories)), and the profile's Firefox policy (see [Firefox policies](#firefox-policies)).
 
 | Profile | Additional installs |
 |---------|---------------------|
 | `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH key from Bitwarden (Generic Home SSH Key) |
 | `work`  | SSH key from Bitwarden (Github Work SSH Key) |
+| `kali`  | Firefox policy only — no other role has tasks tagged `kali` |
 
 ## SSH keys
 
@@ -67,3 +73,7 @@ Keys are named after their Bitwarden item name (lowercased, spaces → underscor
 ## Private repositories
 
 The `repos` role clones `git@github.com:OlofHaglund/PKMS.git` (branch `main`) to `~/Documents/PKMS`. It runs after the `ssh_keys` role so a provisioned key is available, and uses the key file written for the active profile (`~/.ssh/generic_home_ssh_key` or `~/.ssh/github_work_ssh_key`). Repo settings can be overridden with `-e repos_pkms_url=...`, `-e repos_pkms_branch=...`, or `-e repos_pkms_dest=...`.
+
+## Firefox policies
+
+Three policy templates live in `roles/firefox/files/policies/`: `home.json`, `work.json`, and `kali.json`. The `firefox` role installs only the one for the active profile tag as `/etc/firefox/policies.json` — the file Firefox reads on Linux. Fill in a template as needed and re-run the playbook to redeploy.
