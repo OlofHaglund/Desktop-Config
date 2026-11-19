@@ -42,7 +42,7 @@ ansible-playbook fedora.yml --check --skip-tags sudo --tags work
 
 ## What each profile installs
 
-All profiles install: system updates, base packages (vim, flatpak, nodejs, npm), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), and Veshell (enabled from the `@free-explorers` COPR, `veshell-bin`).
+All profiles install: system updates, base packages (vim, flatpak, nodejs, npm, git), multimedia codecs, virt-manager, DNF Automatic, dotfiles (.bashrc, .gitconfig), Veshell (enabled from the `@free-explorers` COPR, `veshell-bin`), and the PKMS repository cloned to `~/Documents/PKMS` (see [Private repositories](#private-repositories)).
 
 | Profile | Additional installs |
 |---------|---------------------|
@@ -63,3 +63,7 @@ Find your personal API key at: Bitwarden web vault → Account Settings → Secu
 The Bitwarden CLI is pointed at the EU server (`https://vault.bitwarden.eu`) by default. For a US account, override it with `-e ssh_keys_bw_server=https://vault.bitwarden.com`. Item names can be overridden with `-e ssh_keys_home_key_name=...` / `-e ssh_keys_work_key_name=...`.
 
 Keys are named after their Bitwarden item name (lowercased, spaces → underscores) and written to `~/.ssh/` with `0600`/`0644` permissions. A sentinel file `~/.ssh/.provisioned` is created so the prompts are skipped on re-runs.
+
+## Private repositories
+
+The `repos` role clones `git@github.com:OlofHaglund/PKMS.git` (branch `main`) to `~/Documents/PKMS`. It runs after the `ssh_keys` role so a provisioned key is available, and uses the key file written for the active profile (`~/.ssh/generic_home_ssh_key` or `~/.ssh/github_work_ssh_key`). Repo settings can be overridden with `-e repos_pkms_url=...`, `-e repos_pkms_branch=...`, or `-e repos_pkms_dest=...`.

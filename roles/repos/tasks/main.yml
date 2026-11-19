@@ -1,0 +1,41 @@
+---
+# main.yml
+# Clone private repositories that require a provisioned GitHub SSH key.
+#
+# Ordering matters: fedora.yml applies this role after ssh_keys so the
+# key is already in ~/.ssh before the clone attempts authentication.
+# The key file name mirrors the ssh_keys naming convention
+# (Bitwarden item name, lowercased, non-alphanumerics -> _).
+
+- name: Locate provisioned SSH keys from the ssh_keys role
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.ssh/{{ item }}"
+  loop:
+    - "{{ ssh_keys_home_key_name | lower | regex_replace('[^a-z0-9_-]', '_') }}"
+    - "{{ ssh_keys_work_key_name | lower | regex_replace('[^a-z0-9_-]', '_') }}"
+  register: repos_provisioned_keys
+  tags:
+    - home
+    - work
+
+- name: Fail if no provisioned SSH key is available
+  ansible.builtin.fail:
+    msg: >-
+      No SSH key provisioned by the ssh_keys role was found in ~/.ssh.
+      Run the playbook with exactly one profile tag (--tags home or
+      --tags work) so a key is fetched before the repos role runs.
+  when: repos_provisioned_keys.results | selectattr('stat.exists') | list | length == 0
+  tags:
+    - home
+    - work
+
+- name: Clone PKMS repository
+  ansible.builtin.git:
+    repo: "{{ repos_pkms_url }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/{{ repos_pkms_dest }}"
+    version: "{{ repos_pkms_branch }}"
+    key_file: "{{ ansible_facts['env']['HOME'] }}/.ssh/{{ repos_provisioned_keys.results | selectattr('stat.exists') | map(attribute='item') | first }}"
+    accept_hostkey: true
+  tags:
+    - home
+    - work

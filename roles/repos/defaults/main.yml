@@ -1,0 +1,8 @@
+---
+# Private repository settings for the repos role.
+#
+# PKMS is cloned over SSH and requires a key provisioned by the ssh_keys
+# role, so fedora.yml applies this role after ssh_keys.
+repos_pkms_url: "git@github.com:OlofHaglund/PKMS.git"
+repos_pkms_branch: "main"
+repos_pkms_dest: "Documents/PKMS"

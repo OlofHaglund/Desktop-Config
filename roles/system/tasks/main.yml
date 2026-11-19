@@ -18,6 +18,7 @@
       - nodejs
       - npm
       - alacritty
+      - git
     state: present
   become: true
   tags:
