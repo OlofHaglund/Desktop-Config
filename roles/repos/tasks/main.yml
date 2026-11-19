@@ -6,6 +6,9 @@
 # key is already in ~/.ssh before the clone attempts authentication.
 # The key file name mirrors the ssh_keys naming convention
 # (Bitwarden item name, lowercased, non-alphanumerics -> _).
+#
+# If the destination directory already exists the clone is skipped, so
+# local modifications in an existing checkout are left untouched.
 
 - name: Locate provisioned SSH keys from the ssh_keys role
   ansible.builtin.stat:
@@ -29,6 +32,14 @@
     - home
     - work
 
+- name: Check if PKMS repository is already cloned
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ repos_pkms_dest }}"
+  register: repos_pkms_cloned
+  tags:
+    - home
+    - work
+
 - name: Clone PKMS repository
   ansible.builtin.git:
     repo: "{{ repos_pkms_url }}"
@@ -36,6 +47,7 @@
     version: "{{ repos_pkms_branch }}"
     key_file: "{{ ansible_facts['env']['HOME'] }}/.ssh/{{ repos_provisioned_keys.results | selectattr('stat.exists') | map(attribute='item') | first }}"
     accept_hostkey: true
+  when: not repos_pkms_cloned.stat.exists
   tags:
     - home
     - work
