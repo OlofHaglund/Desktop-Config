@@ -19,6 +19,7 @@
       - npm
       - alacritty
       - git
+      - jq
     state: present
   become: true
   tags:

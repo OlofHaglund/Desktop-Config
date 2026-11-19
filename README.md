@@ -52,7 +52,7 @@ All profiles install: system updates, base packages (vim, flatpak, nodejs, npm, 
 | Profile | Additional installs |
 |---------|---------------------|
 | `home`  | Discord, YouTube Music, Steam, Protontricks, Anki, Signal, Claude Code, TickTick, SSH key from Bitwarden (Generic Home SSH Key) |
-| `work`  | SSH key from Bitwarden (Github Work SSH Key) |
+| `work`  | SSH key from Bitwarden (Github Work SSH Key), VPN topbar color changer |
 | `kali`  | Firefox policy only — no other role has tasks tagged `kali` |
 
 ## SSH keys
@@ -72,8 +72,12 @@ Keys are named after their Bitwarden item name (lowercased, spaces → underscor
 
 ## Private repositories
 
-The `repos` role clones `git@github.com:OlofHaglund/PKMS.git` (branch `main`) to `~/Documents/PKMS`. It runs after the `ssh_keys` role so a provisioned key is available, and uses the key file written for the active profile (`~/.ssh/generic_home_ssh_key` or `~/.ssh/github_work_ssh_key`). Repo settings can be overridden with `-e repos_pkms_url=...`, `-e repos_pkms_branch=...`, or `-e repos_pkms_dest=...`.
+The `repos` role clones `git@github.com:OlofHaglund/PKMS.git` (branch `main`) to `~/Documents/PKMS`. It runs after the `ssh_keys` role so a provisioned key is available, and uses the key file written for the active profile (`~/.ssh/generic_home_ssh_key` or `~/.ssh/github_work_ssh_key`). If `~/Documents/PKMS` already exists the clone is skipped, so a checkout with local modifications is left untouched (delete the directory to force a re-clone). Repo settings can be overridden with `-e repos_pkms_url=...`, `-e repos_pkms_branch=...`, or `-e repos_pkms_dest=...`.
 
 ## Firefox policies
 
 Three policy templates live in `roles/firefox/files/policies/`: `home.json`, `work.json`, and `kali.json`. The `firefox` role installs only the one for the active profile tag as `/etc/firefox/policies.json` — the file Firefox reads on Linux. Fill in a template as needed and re-run the playbook to redeploy.
+
+## VPN topbar color changer (work profile)
+
+The `system` role deploys a NetworkManager dispatcher (`/etc/NetworkManager/dispatcher.d/99-vpn-color`) that touches/removes `/tmp/vpn_active` when the VPN goes up or down. The `veshell` role installs `~/.local/bin/vpn-color-listener.sh` as a systemd **user** service, which polls that file and rewrites `theme.color` in `~/.config/veshell/settings.json` — Veshell reloads the file on its own, so changing the hex color is the only thing needed to take effect. Colors: `0xFF1C2EB7` (normal), `0xFF003380` (VPN up).

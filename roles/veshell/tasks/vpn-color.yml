@@ -1,0 +1,50 @@
+---
+# vpn-color.yml
+# Configures the VPN topbar color changer for Veshell.
+# - Deploys vpn-color-listener.sh to ~/.local/bin and runs it as a
+#   systemd user service
+# - The listener polls /tmp/vpn_active (written by the NM dispatcher
+#   99-vpn-color from the system role) and rewrites theme.color in
+#   ~/.config/veshell/settings.json, which Veshell reloads itself
+
+- name: Ensure ~/.local/bin directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags:
+    - work
+
+- name: Deploy VPN color listener script
+  ansible.builtin.copy:
+    src: vpn-color-listener.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/vpn-color-listener.sh"
+    mode: '0755'
+  tags:
+    - work
+
+- name: Ensure systemd user service directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user"
+    state: directory
+    mode: '0755'
+  tags:
+    - work
+
+- name: Deploy VPN color listener systemd user service
+  ansible.builtin.copy:
+    src: vpn-color-listener.service
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user/vpn-color-listener.service"
+    mode: '0644'
+  tags:
+    - work
+
+- name: Enable and start VPN color listener service
+  ansible.builtin.systemd:
+    name: vpn-color-listener.service
+    enabled: true
+    state: started
+    scope: user
+    daemon_reload: true
+  tags:
+    - work

@@ -28,3 +28,8 @@
     - home
     - work
     - sudo
+
+- name: Include VPN color changer tasks
+  ansible.builtin.include_tasks: vpn-color.yml
+  tags:
+    - work
