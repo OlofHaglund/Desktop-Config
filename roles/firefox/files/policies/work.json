@@ -1,3 +1,26 @@
 {
-  "policies": {}
+  "policies": {
+    "DisplayBookmarksToolbar": "newtab",
+    "Extensions": {
+      "Install": [
+
+      ]
+    },
+    "FirefoxHome": {
+      "SponsoredTopSites": false,
+      "Highlights": false
+    },
+    "DisableTelemetry": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "SearchEngines": {
+      "Default": "Ecosia"
+    },
+    "DisableFirefoxStudies": true,
+    "HttpsOnlyMode": "enabled",
+    "TranslateEnabled": false,
+    "PasswordManagerEnabled": false,
+    "OfferToSaveLogins": false, 
+    "OfferToSaveLoginsDefault": false
+  }
 }

@@ -9,7 +9,7 @@
 
 - name: Ensure /etc/firefox directory
   ansible.builtin.file:
-    path: /etc/firefox
+    path: /etc/firefox/policies
     state: directory
     owner: root
     group: root
@@ -24,7 +24,7 @@
 - name: Install Firefox policy (home)
   ansible.builtin.copy:
     src: policies/home.json
-    dest: /etc/firefox/policies.json
+    dest: /etc/firefox/policies/policies.json
     owner: root
     group: root
     mode: '0644'
@@ -36,7 +36,7 @@
 - name: Install Firefox policy (work)
   ansible.builtin.copy:
     src: policies/work.json
-    dest: /etc/firefox/policies.json
+    dest: /etc/firefox/policies/policies.json
     owner: root
     group: root
     mode: '0644'
@@ -48,7 +48,7 @@
 - name: Install Firefox policy (kali)
   ansible.builtin.copy:
     src: policies/kali.json
-    dest: /etc/firefox/policies.json
+    dest: /etc/firefox/policies/policies.json
     owner: root
     group: root
     mode: '0644'
