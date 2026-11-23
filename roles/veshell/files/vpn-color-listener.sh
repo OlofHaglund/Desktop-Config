@@ -7,7 +7,7 @@
 # changed file on its own — no reload trigger needed.
 
 SETTINGS="$HOME/.config/veshell/settings.json"
-NORMAL="0xFF1C2EB7"
+NORMAL="0xFFB71C1C"
 VPN="0xFF003380"
 
 last_state="unknown"
